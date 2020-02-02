@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCAfWc07gtOi3RnGD9Hr3L9NBJyCZuWhv4&callback=initMap"></script>
+
+		<style type="text/css">
+			html, body { height: 100%; margin: 0; padding: 0; }
+			#map { height: 100%; }
+		</style>
+	</head>
+	<body>
+		<div id="map"></div>
+
+		<script type="text/javascript">
+
+		// krijimi i objektit te hartes
+		var map;
+
+		// inicializimi i hartes
+		function initMap()
+		{
+			map = new google.maps.Map(document.getElementById('map'),
+			{	center: {lat: 42.648378, lng: 21.166840},
+				zoom: 14,
+				zoomControl: true,
+				scaleControl: true,
+				mapTypeControl: true,
+				mapTypeControlOptions:
+				{
+					style: google.maps.MapTypeControlStyle.HORIZONTAL_BAR,
+					position: google.maps.ControlPosition.TOP_CENTER
+				},
+				mapTypeId: google.maps.MapTypeId.TERRAIN,
+				streetViewControl: true,
+				rotateControl: true
+			});
+
+			// shtimi i markerit ne harte
+			var marker = new google.maps.Marker(
+			{
+				position: {lat: 42.6476536, lng: 21.1665623},
+				map: map,
+				title: 'Shtyp per tu afruar te Pika'
+			});
+
+			marker.addListener('click', function()
+			{
+				map.setZoom(18);
+				map.setCenter(marker.getPosition());
+			});
+
+
+			// koordinatat ne harte
+			var infowindow = new google.maps.InfoWindow();
+
+			google.maps.event.addListener(map, 'click', function(event)
+			{
+				var lat = event.latLng.lat();
+				lat = lat.toFixed(4);
+				var lng = event.latLng.lng();
+				lng = lng.toFixed(4);
+
+				infowindow.setContent("Gjatesia: " + dec2dms(lat) + " Gjeresia: " + dec2dms(lng));
+				infowindow.open(map, 0);
+				infowindow.setPosition(event.latLng);
+			});
+
+			var image = 'flag.png';
+			var marker2 = new google.maps.Marker(
+			{
+				map: map,
+				draggable: true,
+				animation: google.maps.Animation.DROP,
+				position: {lat: 42.648378, lng: 21.166840},
+				icon: image,
+				title: "Fakulteti Teknik"
+			});
+
+			marker2.addListener('click', toggleBounce);
+
+
+			function toggleBounce()
+			{
+				if(marker2.getAnimation() !== null) marker2.setAnimation(null);
+			  	else marker2.setAnimation(google.maps.Animation.BOUNCE);
+			}
+
+			var marker3 = new google.maps.Marker(
+			{
+				position: {lat: 42.647378, lng: 21.177840},
+				title: 'Shtyp per info',
+				map: map
+			});
+
+			var infowindow = new google.maps.InfoWindow(
+			{
+				content: "<h1>Location</h1><p>Nje lokacion i rendomte</p>"
+				// position: latLng, maxWidth: 200
+			});
+
+			marker3.addListener('click', function()
+			{
+				infowindow.open(map, marker3);
+			});
+
+			var flightPlanCoordinates =
+			[
+				{lat: 42.657, lng: 21.17},
+				{lat: 42.648, lng: 21.168},
+				{lat: 42.634, lng: 21.1823},
+				{lat: 42.654, lng: 21.183},
+				{lat: 42.651, lng: 21.1763},
+				{lat: 42.657, lng: 21.17}
+			];
+			var flightPath = new google.maps.Polyline(
+			{
+				path: flightPlanCoordinates,
+				geodesic: true,
+				strokeColor: '#FF0000',
+				strokeOpacity: 1.0,
+				strokeWeight: 2
+			});
+			flightPath.setMap(map);
+
+
+			var path =
+			[
+				{lat: 42.65, lng: 21}, {lat: 42.648, lng: 21.10}, {lat: 42.63, lng: 21.15}
+			];
+
+			var lineSymbol =
+			{
+				path: 'M 0,-1 0,1', strokeOpacity: 1, scale: 4
+			};
+
+			poly = new google.maps.Polyline(
+			{
+				path: path,
+				strokeColor: '#004060',  strokeOpacity: 0.2,  strokeWeight: 3,
+				icons: [{ icon: lineSymbol, offset: '0', repeat: '20px' }],
+				map: map
+			});
+
+			var poly2 = new google.maps.Polyline(
+			{
+				strokeColor: '#004060',
+				strokeWeight: 3
+			});
+			poly2.setMap(map);
+			map.addListener('click', addLatLng);
+			function addLatLng(event)
+			{
+				var path = poly2.getPath(); // query path
+				path.push(event.latLng); // append new position
+				var marker = new google.maps.Marker( // add new marker
+				{
+					position: event.latLng,
+					map: map
+				});
+			}
+
+			//Define the LatLng coordinates for the polygon's  outer path.
+				var outerCoords = [
+					{lat: 42.64, lng: 21.15},
+					{lat: 42.62, lng: 21.12},
+					{lat: 42.643, lng: 21.13}
+				];
+				//
+				// Define the LatLng coordinates for the polygon's inner path.
+				// Note that the points forming the inner path are wound in the
+				// opposite direction to those in the outer path, to form the hole.
+				var innerCoords = [
+					{lat: 42.6421, lng: 21.139441},
+					{lat: 42.6380, lng: 21.1385},
+					{lat: 42.639, lng: 21.1417}
+				];
+
+				// Construct the polygon, including both paths.
+				var triangle = new google.maps.Polygon({
+					paths: [outerCoords, innerCoords],
+					strokeColor: '#FFC107',
+					strokeOpacity: 0.8,
+					strokeWeight: 2,
+					fillColor: '#FFC107',
+					fillOpacity: 0.35,
+					draggable: true,
+					editable: true
+				});
+				triangle.setMap(map);
+
+		}
+		</script>
+
+		<script>
+		// funksioni per konvertim nga degrees decimal ne DMMSS.SSSS
+
+							function dec2dms(p1) {
+								var degint = parseInt(p1,10);
+								var minint = parseInt((p1-degint)*60,10);
+								var sec = (p1-degint-minint/60)*3600;
+								var result =  degint + "° " + minint + "' " + sec.toFixed(2) +"''";
+								return result;
+								}
+		  </script>
+	</body>
+</html>

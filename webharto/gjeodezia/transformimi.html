@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>Perdorimi i Proj4Js Per transformim te koordinatave 4.1</title>
+	<script  type="text/javascript" src="jquery-2.1.0.js"></script>
+	<script type="text/javascript" src="proj4.js"></script>
+  <script type="text/javascript">
+    $(window).load(function(){
+	   //EPSG:3857 WGS 84 / Pseudo-Mercator -- Spherical Mercator, Google Maps, OpenStreetMap, Bing, ArcGIS, ESRI
+
+	var burimi = new proj4.Proj('EPSG:4326');    //Koordinatat në sistemin burim duhet të jenë në  WGS84
+	var destinimi = new proj4.Proj('EPSG:3857');
+		$("#convert").on("click", function(){
+			var p = new proj4.Point($("#lng").val(), $("#lat").val() );
+			proj4.transform(burimi, destinimi, p);
+			alert("X : " +p.x + " \nY : " + p.y);
+		});
+});
+</script>
+</head>
+<body>
+  <h1>Sheno koordinatat</h1>
+  <h4>Koordinatat duhet te jene ne standardin WGS84</h4>
+    Gjatësia : <input type="number" id="lng" />
+	Gjerësia : <input type="number" id="lat" />
+<button id="convert">Transformo</button>
+<h1></h1>
+<h3>Me shume info: <a href="../../lib/proj4js/">Proj4</a></h3>
+</body>
+</html>

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<style type="text/css">
+			html, body { height: 100%; margin: 0; padding: 0; }
+			#map { height: 100%; }
+		</style>
+	</head>
+	<body>
+		<div id="map"></div>
+		<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCAfWc07gtOi3RnGD9Hr3L9NBJyCZuWhv4"></script>
+
+		<script src="fna.geo.json"></script>
+		<script type="text/javascript">
+      var map = new google.maps.Map(document.getElementById('map'),
+      {
+        center: {lat: 42.648378, lng: 21.166840},
+        zoom: 18
+      });
+      var poly = new google.maps.Polyline(
+      {
+        strokeColor: '#004060',
+        strokeWeight: 3
+      });
+      poly.setMap(map);
+      map.addListener('click', addLatLng);
+      function addLatLng(event)
+      {
+        var path = poly.getPath(); // query path
+        path.push(event.latLng); // append new position
+        var marker = new google.maps.Marker( // add new marker
+        {
+          position: event.latLng,
+          map: map
+        });
+      }
+
+			var path1 = // first polygon in CCW order
+			[
+					{lat: 42.648425, lng: 21.167317 },		{lat: 42.648204, lng: 21.167863 },
+					{lat: 42.648024, lng: 21.167786 },		{lat: 42.648255, lng: 21.167224 }
+				//	{lat: 42.648255, lng: 21.167224 }
+			];
+			var path2 = // second polygon in CW order
+			[
+				{lat: 42.648593, lng: 21.166029 },		{lat: 42.64822, lng: 21.165757 },
+					{lat: 42.6481, lng: 21.166055 },		{lat: 42.648416, lng: 21.166252 },
+					{lat: 42.648447, lng: 21.166176 },		{lat: 42.648518, lng: 21.166218 }
+			];
+
+			var polygon = new google.maps.Polygon(
+			{
+				paths: [ path1, path2 ],
+				strokeColor: '#408000',		strokeOpacity: 1.0,	strokeWeight: 2,
+				fillColor: '#80FF00',	fillOpacity: 0.4
+			});
+
+			polygon.setMap(map);
+
+			var path = // first polygon in CCW order
+			[
+					{lat: 42.648425, lng: 21.167317 },		{lat: 42.648204, lng: 21.167863 },
+					{lat: 42.648024, lng: 21.167786 },		{lat: 42.648255, lng: 21.167224 }
+			];
+
+			var polygon = new google.maps.Polygon(
+			{
+				paths: [ path ],
+				strokeColor: '#408000',
+				strokeOpacity: 1.0,
+				strokeWeight: 2,
+				fillColor: '#80FF00',
+				fillOpacity: 0.4,
+				draggable: true,
+				editable: true,
+			});
+
+			polygon.setMap(map);
+
+			var imageBounds = new google.maps.LatLngBounds(
+				new google.maps.LatLng(42.645145626, 21.161373298),
+				new google.maps.LatLng(42.652172086, 21.172069413));
+
+			historicalOverlay = new google.maps.GroundOverlay(
+				'topo.jpg',
+				imageBounds);
+
+			historicalOverlay.setMap(map);
+
+			historicalOverlay.setOpacity(0.7);
+
+			//map.data.loadGeoJson('google.json'); // server
+			map.data.addGeoJson(geodata); // local
+
+			//map.data.setStyle({ fillColor: 'green', strokeWeight: 1 });
+
+			// setstyle
+			map.data.setStyle(function(feature)
+			{
+				return ({fillColor: feature.getProperty('color'), strokeWeight: 1 });
+			});
+
+			var infowindow = new google.maps.InfoWindow();
+
+			// Set mouseover event for each feature.
+			map.data.addListener('click', function(event)
+			{
+				infowindow.setContent( event.feature.getProperty('emri'));
+				infowindow.setPosition(event.latLng);
+				infowindow.open(map, 0);
+			});
+		</script>
+
+	</body>
+</html>
